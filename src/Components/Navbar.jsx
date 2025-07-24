@@ -4,7 +4,7 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center shadow-md">
+    <nav className="bg-gray-800 text-white px-4 py-2 flex justify-between items-center shadow-md">
       <Link to="/" className="text-xl font-bold hover:text-blue-400">
         Public Speaking App
       </Link>
