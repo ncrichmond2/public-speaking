@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import {
+  ClockIcon,
+  ChatBubbleLeftEllipsisIcon,
+  DocumentTextIcon,
+  ExclamationTriangleIcon
+} from "@heroicons/react/24/outline";
 
-// Topic pools
+// --- Topic pools ---
 const topicsPool = {
   fun: [
     "Your favorite game as a kid",
@@ -53,33 +60,38 @@ const topicsPool = {
 };
 
 export default function ImpromptuChallenge() {
+  const [gameStarted, setGameStarted] = useState(false);
   const [time, setTime] = useState(1);
   const [topicsCount, setTopicsCount] = useState(5);
+  const [rawTime, setRawTime] = useState(time);
+  const [rawTopicsCount, setRawTopicsCount] = useState(topicsCount);
   const [category, setCategory] = useState("random");
+  const [trackSpeech, setTrackSpeech] = useState(true);
 
-  const [gameStarted, setGameStarted] = useState(false);
   const [remainingTime, setRemainingTime] = useState(0);
   const [mainTopic, setMainTopic] = useState("");
   const [subtopics, setSubtopics] = useState([]);
   const [revealedTopics, setRevealedTopics] = useState([]);
   const [wordCount, setWordCount] = useState(0);
+  const [fillerCount, setFillerCount] = useState(0);
   const [startTimestamp, setStartTimestamp] = useState(null);
   const [showPanels, setShowPanels] = useState(true);
 
   const timerRef = useRef(null);
   const timeoutsRef = useRef([]);
   const recognitionRef = useRef(null);
-
   const totalSeconds = Math.round(time * 60);
+  const fillerWords = ["um", "uh", "ah", "like", "you know"];
+
+  useEffect(() => setRawTime(time), [time]);
+  useEffect(() => setRawTopicsCount(topicsCount), [topicsCount]);
 
   const getRandom = (arr, count = 1) => [...arr].sort(() => Math.random() - 0.5).slice(0, count);
-
   const getMainTopicPool = () => {
     if (category === "fun") return topicsPool.mainFun;
     if (category === "serious") return topicsPool.mainSerious;
     return topicsPool.mainRandom;
   };
-
   const getSubtopicPool = () => {
     if (category === "random") return [...topicsPool.fun, ...topicsPool.serious, ...topicsPool.random];
     return topicsPool[category];
@@ -88,8 +100,10 @@ export default function ImpromptuChallenge() {
   const handleSpeech = (e) => {
     const transcript = e.results?.[0]?.[0]?.transcript;
     if (transcript) {
-      const words = transcript.trim().split(/\s+/).length;
-      setWordCount((prev) => prev + words);
+      const wordsArr = transcript.trim().split(/\s+/);
+      setWordCount(prev => prev + wordsArr.length);
+      const fillersFound = wordsArr.filter(w => fillerWords.includes(w.toLowerCase())).length;
+      setFillerCount(prev => prev + fillersFound);
     }
   };
 
@@ -98,29 +112,28 @@ export default function ImpromptuChallenge() {
     setStartTimestamp(Date.now());
     setRemainingTime(totalSeconds);
     setWordCount(0);
+    setFillerCount(0);
 
     const main = getRandom(getMainTopicPool())[0];
     setMainTopic(main);
-
-    const subtopicCount = Math.max(0, topicsCount - 1);
-    const subtopicsChosen = getRandom(getSubtopicPool(), subtopicCount);
-    setSubtopics(subtopicsChosen);
+    const subCount = Math.max(0, topicsCount - 1);
+    const chosen = getRandom(getSubtopicPool(), subCount);
+    setSubtopics(chosen);
     setRevealedTopics([]);
 
-    const interval = totalSeconds / (subtopicCount + 1);
+    const interval = totalSeconds / (subCount + 1);
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
-
-    subtopicsChosen.forEach((topic, i) => {
-      const timeout = setTimeout(() => {
-        setRevealedTopics((prev) => [...prev, topic]);
+    chosen.forEach((topic, i) => {
+      const t = setTimeout(() => {
+        setRevealedTopics(prev => [...prev, topic]);
       }, (i + 1) * interval * 1000);
-      timeoutsRef.current.push(timeout);
+      timeoutsRef.current.push(t);
     });
 
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setRemainingTime((prev) => {
+      setRemainingTime(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           return 0;
@@ -129,13 +142,15 @@ export default function ImpromptuChallenge() {
       });
     }, 1000);
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.onresult = handleSpeech;
-      recognition.start();
-      recognitionRef.current = recognition;
+    if (trackSpeech) {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SR) {
+        const recog = new SR();
+        recog.continuous = true;
+        recog.onresult = handleSpeech;
+        recog.start();
+        recognitionRef.current = recog;
+      }
     }
   };
 
@@ -152,141 +167,190 @@ export default function ImpromptuChallenge() {
     setRevealedTopics([]);
     setRemainingTime(0);
     setWordCount(0);
+    setFillerCount(0);
     setStartTimestamp(null);
   };
 
   const getSliderBackground = (value, min, max) => {
-    const percentage = ((value - min) / (max - min)) * 100;
-    return `linear-gradient(to right, #3b82f6 ${percentage}%, #374151 ${percentage}%)`;
+    const pct = ((value - min) / (max - min)) * 100;
+    return `linear-gradient(to right, #3b82f6 ${pct}%, #e5e7eb ${pct}%)`;
   };
 
-  const wpm = startTimestamp
-    ? Math.floor((wordCount / ((Date.now() - startTimestamp) / 60000)))
-    : 0;
-
+  const wpm = startTimestamp ? Math.floor(wordCount / ((Date.now() - startTimestamp) / 60000)) : 0;
   const progressPercent = 100 - (remainingTime / totalSeconds) * 100;
 
   if (!gameStarted) {
     return (
-      <div className="h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full bg-gray-800 rounded-2xl shadow-lg p-8 space-y-6">
-          <h1 className="text-3xl font-bold text-center mb-4">🎤 Impromptu Challenge</h1>
-          <p className="text-gray-400 text-center mb-6 text-sm">
+      <div className="h-screen bg-white text-blue-900 flex flex-col items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 space-y-6 border border-gray-200"
+        >
+          <h1 className="text-3xl font-bold text-center mb-2">🎤 Impromptu Challenge</h1>
+          <p className="text-gray-600 text-center mb-4 text-sm">
             Pick your settings, then speak your heart out as new topics appear!
           </p>
 
-          <div className="space-y-2">
-            <label className="block text-sm text-gray-300">
-              ⏳ Time (minutes): <span className="font-semibold">{time}</span>
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="0.01"
-              value={time}
-              onChange={(e) => setTime(parseFloat(e.target.value))}
-              className="w-full rounded-lg appearance-none h-2 focus:outline-none"
-              style={{ WebkitAppearance: "none", background: getSliderBackground(time, 1, 5) }}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm text-gray-300">
-              📝 Number of Topics: <span className="font-semibold">{topicsCount}</span>
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              step="0.01"
-              value={topicsCount}
-              onChange={(e) => setTopicsCount(parseFloat(e.target.value))}
-              className="w-full rounded-lg appearance-none h-2 focus:outline-none"
-              style={{ WebkitAppearance: "none", background: getSliderBackground(topicsCount, 1, 10) }}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm text-gray-300">🎯 Topic Category:</label>
-            <div className="flex space-x-2">
-              {["fun", "serious", "random"].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`flex-1 py-2 rounded-full font-semibold transition ${
-                    category === cat
-                      ? "bg-blue-500 text-white shadow-md"
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  }`}
-                >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </button>
-              ))}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="block text-sm text-gray-700">
+                ⏳ Time (minutes):{" "}
+                <span className="font-semibold text-blue-800">{Math.round(rawTime)}</span>
+              </label>
+              <input
+                type="range"
+                min={1}
+                max={5}
+                step={0.01}
+                value={rawTime}
+                onChange={(e) => setRawTime(+e.target.value)}
+                onMouseUp={() => setTime(Math.round(rawTime))}
+                onTouchEnd={() => setTime(Math.round(rawTime))}
+                className="w-full rounded-lg h-2"
+                style={{ background: getSliderBackground(rawTime, 1, 5) }}
+              />
             </div>
+            <div className="space-y-2">
+              <label className="block text-sm text-gray-700">
+                📝 Number of Topics:{" "}
+                <span className="font-semibold text-blue-800">{Math.round(rawTopicsCount)}</span>
+              </label>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                step={0.01}
+                value={rawTopicsCount}
+                onChange={(e) => setRawTopicsCount(+e.target.value)}
+                onMouseUp={() => setTopicsCount(Math.round(rawTopicsCount))}
+                onTouchEnd={() => setTopicsCount(Math.round(rawTopicsCount))}
+                className="w-full rounded-lg h-2"
+                style={{ background: getSliderBackground(rawTopicsCount, 1, 10) }}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm text-gray-700">🎯 Topic Category:</label>
+              <div className="flex space-x-2">
+                {["fun", "serious", "random"].map((id) => (
+                  <button
+                    key={id}
+                    onClick={() => setCategory(id)}
+                    className={`flex-1 py-2 rounded-full font-semibold transition text-sm ${
+                      category === id
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {id.charAt(0).toUpperCase() + id.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm text-gray-700">🎙️ Speech Tracking:</label>
+              <label className="inline-flex items-center space-x-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={trackSpeech}
+                  onChange={(e) => setTrackSpeech(e.target.checked)}
+                  className="form-checkbox h-4 w-4 text-blue-600"
+                />
+                <span>Enable Tracking</span>
+              </label>
+            </div>
+            <button
+              onClick={startGame}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold shadow-md transition text-lg"
+            >
+              🚀 Start Game
+            </button>
           </div>
-
-          <button
-            onClick={startGame}
-            className="w-full bg-blue-500 hover:bg-blue-600 py-3 rounded-lg font-semibold shadow-md transition"
-          >
-            🚀 Start Game
-          </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-gray-900 text-white px-6 py-6 flex flex-col items-center justify-start space-y-4">
-      <h1 className="text-2xl sm:text-3xl font-bold text-center">{mainTopic}</h1>
+    <div className="min-h-screen bg-white text-blue-900 px-6 pt-28 pb-14 flex flex-col items-center space-y-6 overflow-visible">
+
+      <motion.div
+  initial={{ opacity: 0, y: -10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="w-full max-w-4xl bg-white/80 backdrop-blur-md border border-blue-100 rounded-2xl px-8 py-6 text-center shadow-[0_4px_20px_rgba(59,130,246,0.1)]"
+>
+  <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-900 tracking-tight leading-snug">
+    {mainTopic}
+  </h1>
+</motion.div>
+
 
       <button
         onClick={() => setShowPanels((prev) => !prev)}
-        className="text-sm text-blue-400 underline mb-2 hover:text-blue-300"
+        className="text-sm text-blue-600 underline mb-2 hover:text-blue-500 transition"
       >
-        {showPanels ? "Hide Side Panels" : "Show Side Panels"}
+        {showPanels ? "Hide Panels" : "Show Panels"}
       </button>
 
-      <div className="w-full max-w-2xl h-2 bg-gray-700 rounded-full overflow-hidden">
+      <div className="w-full max-w-2xl h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
-          className="bg-blue-500 h-full transition-all duration-500"
+          className="bg-blue-600 h-full transition-all duration-500"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      <div className={`flex flex-col md:flex-row w-full max-w-7xl mt-4 gap-4 items-start`}>
+      <div className="flex flex-col md:flex-row w-full max-w-7xl mt-4 gap-4 items-start">
+        {/* Stats Panel */}
         {showPanels && (
-          <div className="w-full md:w-[200px] bg-gray-800 p-4 rounded-lg shadow-md flex flex-col items-center min-h-[140px]">
-            <h2 className="text-sm font-semibold mb-1">Stats</h2>
-            <p className="text-lg">🕐 {remainingTime}s</p>
-            <p className="text-lg">🗣️ {wpm} WPM</p>
-            <p className="text-lg">📊 {wordCount} Words</p>
+          <div className="w-full md:w-64 bg-white rounded-xl shadow-md p-5 border border-gray-100">
+            <h2 className="text-sm font-semibold text-gray-600 mb-3">Stats</h2>
+            <div className="space-y-3 text-sm text-blue-900">
+              <div className="flex items-center">
+                <ClockIcon className="w-5 h-5 text-blue-600 mr-2" />
+                <span className="font-medium">Time:</span>&nbsp; {remainingTime}s
+              </div>
+              {trackSpeech && (
+                <>
+                  <div className="flex items-center">
+                    <ChatBubbleLeftEllipsisIcon className="w-5 h-5 text-blue-600 mr-2" />
+                    <span className="font-medium">WPM:</span>&nbsp; {wpm}
+                  </div>
+                  <div className="flex items-center">
+                    <DocumentTextIcon className="w-5 h-5 text-blue-600 mr-2" />
+                    <span className="font-medium">Words:</span>&nbsp; {wordCount}
+                  </div>
+                  <div className="flex items-center">
+                    <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mr-2" />
+                    <span className="font-medium">Fillers:</span>&nbsp; {fillerCount}
+                  </div>
+                </>
+              )}
+              {!trackSpeech && (
+                <p className="text-xs text-gray-400 mt-2">Speech tracking is off</p>
+              )}
+            </div>
           </div>
         )}
 
-        <div
-          className={`flex-1 bg-gray-800 p-4 rounded-lg shadow-md flex flex-col items-center ${
-            showPanels ? "mx-2" : "mx-auto"
-          } transition-all`}
-        >
-          <h2 className="text-sm font-semibold mb-2 text-center">Supporting Topics</h2>
-          <ul className="w-full max-w-md">
+        {/* Supporting Topics */}
+        <div className={`flex-1 bg-white rounded-xl shadow-md p-5 border border-gray-100 ${showPanels ? 'mx-2' : 'mx-auto'}`}>
+          <h2 className="text-sm font-semibold text-gray-600 mb-4 text-center">Supporting Topics</h2>
+          <ul className="space-y-2 text-sm text-blue-900">
             {revealedTopics.map((topic, i) => (
-              <li
-                key={i}
-                className="bg-gray-700 p-2 rounded mb-2 text-sm text-center"
-              >
+              <li key={i} className="bg-blue-50 border border-blue-100 px-4 py-2 rounded text-center">
                 {topic}
               </li>
             ))}
           </ul>
         </div>
 
+        {/* Future Insights */}
         {showPanels && (
-          <div className="w-full md:w-[200px] bg-gray-800 p-4 rounded-lg shadow-md flex flex-col items-center min-h-[140px]">
-            <h2 className="text-sm font-semibold mb-1">Future Insights</h2>
-            <p className="text-gray-400 text-xs">Coming soon...</p>
+          <div className="w-full md:w-64 bg-white rounded-xl shadow-md p-5 border border-gray-100">
+            <h2 className="text-sm font-semibold text-gray-600 mb-3">Future Insights</h2>
+            <p className="text-xs text-gray-400 text-center">Coming soon...</p>
           </div>
         )}
       </div>
@@ -294,7 +358,7 @@ export default function ImpromptuChallenge() {
       {remainingTime === 0 && (
         <button
           onClick={resetGame}
-          className="mt-6 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-full font-semibold transition"
+          className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition text-lg"
         >
           🔁 Start Over
         </button>

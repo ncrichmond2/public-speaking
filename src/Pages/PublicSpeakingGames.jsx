@@ -3,80 +3,97 @@ import { Link } from "react-router-dom";
 
 const games = [
   {
-    title: "Impromptu Challenge",
-    description: "Practice thinking on your feet with random topics.",
+    name: "Impromptu Challenge",
     path: "/games/impromptu",
+    description: "Think fast, speak faster!",
+    ready: true
   },
   {
-    title: "Story Builder",
-    description: "Build a story sentence by sentence to improve narrative flow.",
-    path: "/games/story-builder",
+    name: "Persuasion Duel",
+    path: "#",
+    description: "Coming soon...",
+    ready: false
   },
   {
-    title: "Filler Word Eliminator",
-    description: "Reduce 'ums' and 'uhs' with timed speaking drills.",
-    path: "/games/filler-eliminator",
+    name: "Story Spin",
+    path: "#",
+    description: "Coming soon...",
+    ready: false
   },
   {
-    title: "Emotion Shift",
-    description: "Practice delivering the same line with different emotions.",
-    path: "/games/emotion-shift",
+    name: "Elevator Pitch",
+    path: "#",
+    description: "Coming soon...",
+    ready: false
   },
+  {
+    name: "Word Limit Gauntlet",
+    path: "#",
+    description: "Coming soon...",
+    ready: false
+  },
+  {
+    name: "Distraction Mastery",
+    path: "#",
+    description: "Coming soon...",
+    ready: false
+  }
 ];
 
 export default function PublicSpeakingGames() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-8">
-      <div className="max-w-5xl mx-auto text-center">
-        {/* Header */}
-        <motion.h1
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl font-extrabold mb-4"
-        >
-          Public Speaking Games
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-gray-300 text-lg mb-10"
-        >
-          Select a game to improve your speaking, storytelling, and confidence.
-        </motion.p>
+    <div className="pt-24 pb-16 px-6 bg-white min-h-screen">
+      <motion.h1
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-4xl sm:text-5xl font-bold text-blue-900 text-center mb-6"
+      >
+        Practice Through Play
+      </motion.h1>
 
-        {/* Game Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.map((game, i) => (
-            <motion.div
-              key={game.title}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 * i, duration: 0.6 }}
-              className="bg-gray-700 rounded-lg p-6 shadow-md hover:shadow-lg hover:bg-gray-600 cursor-pointer transition transform hover:scale-105"
-            >
-              <h2 className="text-xl font-semibold mb-2">{game.title}</h2>
-              <p className="text-gray-300 text-sm mb-4">{game.description}</p>
-              <Link
-                to={game.path}
-                className="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium transition"
-              >
-                Play Now
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto"
+      >
+        Explore interactive games designed to make you a more confident, quick-thinking speaker.
+      </motion.p>
 
-        {/* Back to Home */}
-        <div className="mt-12">
-          <Link
-            to="/"
-            className="text-gray-400 hover:text-white underline text-sm"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {games.map((game, index) => (
+          <motion.div
+            key={game.name}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * index, duration: 0.5 }}
           >
-            ← Back to Home
-          </Link>
-        </div>
+            {game.ready ? (
+              <Link to={game.path}>
+                <div className="group bg-white border border-gray-200 hover:border-blue-600 shadow-sm hover:shadow-md rounded-xl p-6 transition cursor-pointer h-full flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-blue-800 group-hover:text-blue-700 mb-2">
+                      {game.name}
+                    </h2>
+                    <p className="text-gray-600">{game.description}</p>
+                  </div>
+                  <div className="mt-4 text-blue-600 font-medium group-hover:underline">
+                    Play →
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 h-full flex flex-col justify-between opacity-80 cursor-not-allowed shadow-sm">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-400 mb-2">{game.name}</h2>
+                  <p className="text-gray-400">{game.description}</p>
+                </div>
+                <div className="mt-4 text-gray-300 font-medium">Coming Soon</div>
+              </div>
+            )}
+          </motion.div>
+        ))}
       </div>
     </div>
   );
