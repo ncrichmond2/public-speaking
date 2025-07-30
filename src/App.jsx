@@ -1,7 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
+
+// Pages
 import LandingPage from "./pages/LandingPage";
-import PracticeRoom from "./pages/PracticeRoom";
+import PublicSpeakingGames from "./pages/PublicSpeakingGames";
+import ImpromptuChallenge from "./pages/ImpromptuChallenge";
+// Future game routes (optional)
+// import PersuasionDuel from "./pages/PersuasionDuel";
+// import StorySpin from "./pages/StorySpin";
+// import ElevatorPitch from "./pages/ElevatorPitch";
 
 export default function App() {
   return (
@@ -10,11 +17,13 @@ export default function App() {
       <div className="flex-1 overflow-hidden">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/practice" element={<PracticeRoom />} />
+          <Route path="/games" element={<PublicSpeakingGames />} />
+          <Route path="/games/impromptu" element={<ImpromptuChallenge />} />
+          {/* Future routes can go here */}
+          {/* <Route path="/games/persuasion" element={<PersuasionDuel />} /> */}
         </Routes>
       </div>
     </div>
   );
 }
-
 
