@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import {
   ClockIcon,
   ChatBubbleLeftEllipsisIcon,
@@ -70,7 +70,7 @@ export default function ImpromptuChallenge() {
 
   const [remainingTime, setRemainingTime] = useState(0);
   const [mainTopic, setMainTopic] = useState("");
-  const [subtopics, setSubtopics] = useState([]);
+  const [_subtopics, setSubtopics] = useState([]);
   const [revealedTopics, setRevealedTopics] = useState([]);
   const [wordCount, setWordCount] = useState(0);
   const [fillerCount, setFillerCount] = useState(0);
@@ -182,7 +182,7 @@ export default function ImpromptuChallenge() {
   if (!gameStarted) {
     return (
       <div className="h-screen bg-white text-blue-900 flex flex-col items-center justify-center p-6">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
@@ -267,7 +267,7 @@ export default function ImpromptuChallenge() {
               🚀 Start Game
             </button>
           </div>
-        </motion.div>
+        </Motion.div>
       </div>
     );
   }
@@ -275,7 +275,7 @@ export default function ImpromptuChallenge() {
   return (
     <div className="min-h-screen bg-white text-blue-900 px-6 pt-28 pb-14 flex flex-col items-center space-y-6 overflow-visible">
 
-      <motion.div
+      <Motion.div
   initial={{ opacity: 0, y: -10 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.5 }}
@@ -284,7 +284,7 @@ export default function ImpromptuChallenge() {
   <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-900 tracking-tight leading-snug">
     {mainTopic}
   </h1>
-</motion.div>
+</Motion.div>
 
 
       <button
@@ -367,4 +367,3 @@ export default function ImpromptuChallenge() {
   );
 }
 
-//test to verify git push 116 pm 730

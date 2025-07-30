@@ -2,9 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 
 // Pages
-import LandingPage from "./pages/LandingPage";
-import PublicSpeakingGames from "./pages/PublicSpeakingGames";
-import ImpromptuChallenge from "./pages/ImpromptuChallenge";
+import LandingPage from "./Pages/LandingPage";
+import PublicSpeakingGames from "./Pages/PublicSpeakingGames";
+import ImpromptuChallenge from "./Pages/ImpromptuChallenge";
 // Future game routes (optional)
 // import PersuasionDuel from "./pages/PersuasionDuel";
 // import StorySpin from "./pages/StorySpin";

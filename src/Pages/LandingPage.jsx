@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const rotatingWords = ["more", "better", "faster"];
 const TYPING_SPEED = 150;
@@ -72,36 +72,36 @@ export default function LandingPage() {
             </span>
 
             {/* Animated word */}
-            <motion.span
+            <Motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               className="absolute left-0"
             >
               {displayText}
-              <motion.span
+              <Motion.span
                 className="inline-block"
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ repeat: Infinity, duration: 1.2 }}
               >
                 |
-              </motion.span>
-            </motion.span>
+              </Motion.span>
+            </Motion.span>
           </span>
         </div>
 
         {/* Tagline */}
-        <motion.p
+        <Motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
           className="text-xl text-gray-600 mb-8 max-w-xl"
         >
           Master public speaking with Prax — build confidence, refine delivery, and track your growth.
-        </motion.p>
+        </Motion.p>
 
         {/* Action Buttons */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6, duration: 0.5, ease: "easeOut" }}
@@ -119,27 +119,27 @@ export default function LandingPage() {
           >
             Learn More
           </Link>
-        </motion.div>
+        </Motion.div>
 
         {/* Social proof */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.6 }}
           className="mt-8 text-sm text-gray-500"
         >
           Trusted by thousands of speakers worldwide.
-        </motion.div>
+        </Motion.div>
 
         {/* Footer */}
-        <motion.p
+        <Motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
           className="mt-10 text-xs text-gray-400"
         >
           © {new Date().getFullYear()} Prax – Elevate your voice.
-        </motion.p>
+        </Motion.p>
       </div>
     </div>
   );
