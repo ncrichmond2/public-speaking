@@ -12,9 +12,11 @@ import ImpromptuChallenge from "./pages/ImpromptuChallenge";
 
 export default function App() {
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen w-screen flex flex-col">
+
       <Navbar />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
+
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/games" element={<PublicSpeakingGames />} />

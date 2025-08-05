@@ -1,146 +1,150 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import Navbar from "../Components/Navbar";
+import BrandedCard from "../Components/BrandedCard";
 
-const rotatingWords = ["more", "better", "faster"];
-const TYPING_SPEED = 150;
-const DELETING_SPEED = 100;
-const PAUSE_DELAY = 1500;
+const wordStyles = [
+  { word: "Power", color: "#2d9cfc", bg: "#2d9cfc33" },
+  { word: "Precision", color: "#a855f7", bg: "#a855f733" },
+  { word: "Presence", color: "#34d399", bg: "#34d39933" },
+  { word: "Prax", color: "#1e3a8a", bg: "#ffffff" },
+];
+
+const features = [
+  {
+    title: "Public Speaking Games",
+    text: "Make practice fun and engaging with competitive speaking challenges.",
+    color: "#2d9cfc",
+  },
+  {
+    title: "Progress Tracking",
+    text: "See detailed stats on confidence, filler words, eye contact, and more.",
+    color: "#a855f7",
+  },
+  {
+    title: "Simulated Pressure",
+    text: "Practice with AI that mimics the tension of real speaking scenarios.",
+    color: "#1e3a8a",
+  },
+];
 
 export default function LandingPage() {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [typing, setTyping] = useState(true);
+  const [index, setIndex] = useState(0);
+  const [currentWord, setCurrentWord] = useState(wordStyles[0]);
+  const [isVisible, setIsVisible] = useState(true);
+  const [cardsVisible, setCardsVisible] = useState(false);
+  const cardsRef = useRef(null);
 
-  // Handles typewriter effect logic
+  // Scroll lock until final word
   useEffect(() => {
-    let timeoutId;
-    const currentWord = rotatingWords[wordIndex];
+    document.body.style.overflow = currentWord.word === "Prax" ? "" : "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [currentWord]);
 
-    if (typing) {
-      if (displayText.length < currentWord.length) {
-        timeoutId = setTimeout(() => {
-          setDisplayText(currentWord.slice(0, displayText.length + 1));
-        }, TYPING_SPEED);
-      } else {
-        timeoutId = setTimeout(() => setTyping(false), PAUSE_DELAY);
-      }
-    } else {
-      if (displayText.length > 0) {
-        timeoutId = setTimeout(() => {
-          setDisplayText(currentWord.slice(0, displayText.length - 1));
-        }, DELETING_SPEED);
-      } else {
-        timeoutId = setTimeout(() => {
-          setWordIndex((prev) => (prev + 1) % rotatingWords.length);
-          setTyping(true);
-        }, TYPING_SPEED);
-      }
-    }
+  // Word cycling effect
+  useEffect(() => {
+    if (index >= wordStyles.length - 1) return;
 
-    return () => clearTimeout(timeoutId);
-  }, [displayText, typing, wordIndex]);
+    const fadeOut = setTimeout(() => setIsVisible(false), 3500);
+    const switchWord = setTimeout(() => {
+      setIndex((i) => i + 1);
+      setCurrentWord(wordStyles[index + 1]);
+      setIsVisible(true);
+    }, 4500);
+
+    return () => {
+      clearTimeout(fadeOut);
+      clearTimeout(switchWord);
+    };
+  }, [index]);
+
+  // Cards scroll detection
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setCardsVisible(entry.isIntersecting),
+      { rootMargin: "0px 0px -30%", threshold: 0.3 }
+    );
+    if (cardsRef.current) observer.observe(cardsRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="relative w-screen h-screen bg-white flex items-center justify-center p-6 overflow-hidden">
-      {/* Background arrow graphic */}
-      <img
-        src="/arrow-bg.png"
-        alt="Arrow background"
-        className="absolute inset-0 m-auto w-3/4 opacity-15 pointer-events-none select-none"
-      />
+    <div className="scroll-smooth bg-white relative">
+      {/* 🌈 Ambient background glow */}
+      <div className="faint-rainbow" />
 
-      <div className="relative flex flex-col items-center text-center text-blue-900 px-4">
-        {/* Headline: Prax + Typewriter */}
-        <div className="flex items-end justify-center mb-8 pl-6">
+      {/* 🧭 Navbar (appears only after animation) */}
+      {index === wordStyles.length - 1 && <Navbar visible />}
 
 
+      {/* 🚀 Hero Section */}
+      <main className="h-screen overflow-hidden flex flex-col items-center justify-center text-center relative px-6">
+        {/* 🔁 Background Layers */}
+        {wordStyles.map((w) => (
+          <div
+            key={w.word}
+            className={`absolute inset-0 z-0 transition-opacity duration-[1200ms] ${
+              currentWord.word === w.word ? "opacity-100 scale-100" : "opacity-0 scale-110"
+            }`}
+            style={{
+              background:
+                w.word === "Prax"
+                  ? "#ffffff"
+                  : `radial-gradient(circle at center, ${w.bg} 40%, transparent 100%)`,
+              filter: w.word === "Prax" ? "none" : "blur(60px)",
+              transitionProperty: "opacity, transform, filter",
+            }}
+          />
+        ))}
 
-          {/* Static 'Prax' text */}
-          <h1 className="text-4xl sm:text-6xl font-semibold text-blue-900 mr-2">
-            Prax
-          </h1>
-
-          {/* Typewriter container */}
+        {/* 🔤 Title */}
+        <h1
+          aria-live="polite"
+          className="relative z-20 text-4xl sm:text-6xl font-extrabold leading-tight mb-8"
+          style={{ color: "#1e3a8a" }}
+        >
+          Find Your Voice.
+          <br />
+          Speak With{" "}
           <span
-            className="text-4xl sm:text-6xl font-light text-blue-800 tabular-nums relative flex items-end"
-            style={{ minWidth: "8ch", top: "0.05em" }}
+            className="inline-block transition-opacity duration-[700ms]"
+            style={{
+              color: currentWord.color,
+              opacity: isVisible ? 1 : 0,
+            }}
           >
-            {/* Invisible placeholder to reserve space */}
-            <span className="invisible absolute">
-              {rotatingWords[wordIndex]}
-            </span>
-
-            {/* Animated word */}
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="absolute left-0"
-            >
-              {displayText}
-              <motion.span
-                className="inline-block"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-              >
-                |
-              </motion.span>
-            </motion.span>
+            {currentWord.word}
           </span>
+        </h1>
+
+        {/* 🚀 CTA Button */}
+        <button className="relative z-20 mt-4 px-6 py-3 rounded-full bg-blue-600 text-white text-lg font-semibold shadow-md hover:bg-blue-500 transition">
+          Get Started →
+        </button>
+      </main>
+
+      {/* 📦 Cards Section */}
+      <section
+        ref={cardsRef}
+        className={`py-20 px-6 transition-colors duration-1000 ${
+          currentWord.word === "Prax" || cardsVisible ? "bg-soft-navy" : "bg-white"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-3">
+          {features.map((card, idx) => (
+            <div
+              key={card.title}
+              className={`transition-all duration-700 transform ${
+                cardsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+              }`}
+              style={{ transitionDelay: `${idx * 200}ms` }}
+            >
+              <BrandedCard {...card} />
+            </div>
+          ))}
         </div>
-
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
-          className="text-xl text-gray-600 mb-8 max-w-xl"
-        >
-          Master public speaking with Prax — build confidence, refine delivery, and track your growth.
-        </motion.p>
-
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col sm:flex-row gap-4"
-        >
-          <Link
-            to="/practice"
-            className="bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 px-10 rounded-lg shadow-md transition text-lg"
-          >
-            Start Practicing
-          </Link>
-          <Link
-            to="/about"
-            className="border-2 border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white font-semibold py-3 px-8 rounded-lg transition text-lg"
-          >
-            Learn More
-          </Link>
-        </motion.div>
-
-        {/* Social proof */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-          className="mt-8 text-sm text-gray-500"
-        >
-          Trusted by thousands of speakers worldwide.
-        </motion.div>
-
-        {/* Footer */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="mt-10 text-xs text-gray-400"
-        >
-          © {new Date().getFullYear()} Prax – Elevate your voice.
-        </motion.p>
-      </div>
+      </section>
     </div>
   );
 }

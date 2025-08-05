@@ -1,42 +1,43 @@
 import { Link, useLocation } from "react-router-dom";
-import logo from "../assets/prax-full-logo.png"; // Move your logo to src/assets if needed
+import logo from "../assets/prax-full-logo.png";
 
-export default function Navbar() {
+export default function Navbar({ visible = true }) {
   const { pathname } = useLocation();
+
   const links = [
     { to: "/", label: "Home" },
     { to: "/practice", label: "Practice Room" },
-    { to: "/games", label: "Games" }
+    { to: "/games", label: "Games" },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
-      <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
-        {/* Logo */}
+    <nav
+      className={`fixed top-0 left-0 right-0 z-40 bg-white bg-opacity-80 backdrop-blur-md shadow-sm transition-opacity duration-700 ${
+        visible ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <img
-            src={logo}
-            alt="Prax Logo"
-            className="h-16 w-auto object-contain"
-          />
+          <img src={logo} alt="Prax Logo" className="h-12 sm:h-14 w-auto object-contain" />
         </Link>
 
-        {/* Nav Links */}
-        <div className="flex space-x-8">
+        <div className="flex space-x-6 sm:space-x-10">
           {links.map(({ to, label }) => {
             const isActive = pathname === to;
             return (
               <Link
                 key={to}
                 to={to}
-                className={`relative font-medium hover:text-blue-500 transition ${
-                  isActive ? "text-blue-600" : "text-gray-700"
+                className={`relative font-medium text-base transition-colors duration-300 ${
+                  isActive ? "text-blue-600" : "text-gray-700 hover:text-blue-500"
                 }`}
               >
                 {label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-                )}
+                <span
+                  className={`absolute left-0 bottom-[-2px] h-[2px] w-full bg-blue-600 transform transition-transform duration-300 ${
+                    isActive ? "scale-x-100" : "scale-x-0"
+                  } origin-left`}
+                />
               </Link>
             );
           })}
