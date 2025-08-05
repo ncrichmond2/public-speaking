@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🌍 Global Reset to Fix Layout Issues */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* 🌈 Brand-Synced Word & Background Animation */
+@keyframes syncedBrandGradient {
+  0%, 100% {
+    background: radial-gradient(circle at center, #2d9cfc 20%, transparent 80%);
+  }
+  33% {
+    background: radial-gradient(circle at center, #a855f7 20%, transparent 80%);
+  }
+  66% {
+    background: radial-gradient(circle at center, #1e3a8a 20%, transparent 80%);
+  }
+}
+
+.faint-rainbow {
+  animation: syncedBrandGradient 15s ease-in-out infinite;
+  opacity: 0.2;
+  position: fixed; /* Covers full screen */
+  inset: 0;
+  z-index: -10;
+  background-size: 200% 200%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* 🌈 Brand word colors */
+.brand-blue {
+  color: #2d9cfc;
+}
+.brand-purple {
+  color: #a855f7;
+}
+.brand-navy {
+  color: #1e3a8a;
+}
+
+/* 👕 Soft branded blue for card background */
+.bg-soft-navy {
+  background-color: #eaf3fc;
+}
+
+/* Base */
+body {
+  @apply bg-white text-black font-sans overflow-x-hidden;
+}
+
+#root {
+  @apply max-w-full m-0 p-0 text-center;
+}
+
+circle {
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* index.css or tailwind base */
+html, body {
+  overflow-x: hidden;
+}
