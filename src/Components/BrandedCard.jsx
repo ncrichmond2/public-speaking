@@ -1,4 +1,3 @@
-// components/BrandedCard.jsx
 import React from "react";
 import styled from "styled-components";
 
@@ -24,23 +23,28 @@ const StyledWrapper = styled.div`
   margin: 0 auto;
 
   .card {
-  position: relative;
-  height: 260px;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+    position: relative;
+    height: 260px;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    /* 🧼 Clean shadow for white bg */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+    /* ✅ New subtle border to separate cards */
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
   }
-}
-
 
   .bg {
     position: absolute;
@@ -48,10 +52,13 @@ const StyledWrapper = styled.div`
     left: 8px;
     right: 8px;
     bottom: 8px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(24px);
     border-radius: 10px;
-    outline: 2px solid white;
+
+    /* ✅ Adds inner "highlight ring" */
+    outline: 1px solid rgba(255, 255, 255, 0.9);
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -82,9 +89,8 @@ const StyledWrapper = styled.div`
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    opacity: 0.8;
-    filter: blur(20px);
-    background-color: #2d9cfc;
+    opacity: 0.75;
+    filter: blur(10px);
     animation: blob-orbit 10s linear infinite;
     pointer-events: none;
   }
