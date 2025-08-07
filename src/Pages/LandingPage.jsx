@@ -148,7 +148,7 @@ export default function LandingPage() {
       </main>
 
      <ScrollSection>
-  <section ref={cardsRef} className="py-20 px-6 bg-[var(--color-bg)]">
+  <section ref={cardsRef} className="py-32 px-6 bg-[var(--color-bg)]">
     <div className="max-w-6xl mx-auto grid gap-14 md:grid-cols-3">
       {features.map(({ title, text, color }, i) => (
         <ScrollSection key={title} delay={i * 0.2}>
@@ -166,7 +166,7 @@ export default function LandingPage() {
 {/*public speaking games section */}
 
       <ScrollSection>
-  <section className="py-20 px-6 bg-[var(--color-bg)]">
+  <section className="py-32 px-6 bg-[var(--color-bg)]">
     <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center gap-12">
       <div className="flex-1">
         <img src={gamesImg} alt="Public Speaking Game" className="rounded-xl shadow-lg w-full max-w-md mx-auto md:mx-0" />
@@ -189,7 +189,7 @@ export default function LandingPage() {
 {/* Progress Tracking Section*/}
 
       <ScrollSection>
-  <section className="py-20 px-6 bg-[var(--color-bg)]">
+  <section className="py-32 px-6 bg-[var(--color-bg)]">
     <div className="max-w-screen-xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12">
       <div className="flex-1 text-center md:text-left">
         <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-tertiary)] mb-4">
@@ -214,7 +214,7 @@ export default function LandingPage() {
 
       {/* Simulated Pressure Practice */}
       <ScrollSection>
-  <section className="py-20 px-6 bg-[var(--color-bg)]">
+  <section className="py-32 px-6 bg-[var(--color-bg)]">
     <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center gap-12">
       <div className="flex-1">
         <img src={simulatedImg} alt="Simulated Speaking Environment" className="rounded-xl shadow-lg w-full max-w-md mx-auto md:mx-0" />
