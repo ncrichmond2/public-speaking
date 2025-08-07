@@ -1,9 +1,10 @@
+// src/Components/BrandedCard/BrandedCard.jsx
 import React from "react";
 import styled from "styled-components";
 
-const BrandedCard = ({ title, text, color = "#2d9cfc" }) => {
+const BrandedCard = ({ title, text, color = "var(--color-secondary)" }) => {
   return (
-    <StyledWrapper>
+    <StyledWrapper $accent={color}>
       <div className="card">
         <div className="bg">
           <div className="content">
@@ -11,7 +12,7 @@ const BrandedCard = ({ title, text, color = "#2d9cfc" }) => {
             <p>{text}</p>
           </div>
         </div>
-        <div className="blob" style={{ backgroundColor: color }} />
+        <div className="blob" />
       </div>
     </StyledWrapper>
   );
@@ -30,13 +31,8 @@ const StyledWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /* 🧼 Clean shadow for white bg */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-
-    /* ✅ New subtle border to separate cards */
     border: 1px solid rgba(0, 0, 0, 0.04);
-
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
 
@@ -48,17 +44,11 @@ const StyledWrapper = styled.div`
 
   .bg {
     position: absolute;
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
+    inset: 8px;
     background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(24px);
     border-radius: 10px;
-
-    /* ✅ Adds inner "highlight ring" */
     outline: 1px solid rgba(255, 255, 255, 0.9);
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -75,12 +65,14 @@ const StyledWrapper = styled.div`
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #1e3a8a;
+    /* use the accent prop for the title */
+    color: ${(p) => p.$accent};
   }
 
   .content p {
     font-size: 0.95rem;
-    color: #333;
+    /* use the neutral text variable */
+    color: var(--color-text);
   }
 
   .blob {
@@ -91,38 +83,20 @@ const StyledWrapper = styled.div`
     border-radius: 50%;
     opacity: 0.75;
     filter: blur(10px);
+    /* same accent color */
+    background-color: ${(p) => p.$accent};
     animation: blob-orbit 10s linear infinite;
     pointer-events: none;
   }
 
   @keyframes blob-orbit {
-    0% {
-      top: 0%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    25% {
-      top: 50%;
-      left: 100%;
-      transform: translate(-50%, -50%);
-    }
-    50% {
-      top: 100%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    75% {
-      top: 50%;
-      left: 0%;
-      transform: translate(-50%, -50%);
-    }
-    100% {
-      top: 0%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+    0%   { top: 0%;   left: 50%; transform: translate(-50%, -50%); }
+    25%  { top: 50%;  left: 100%; transform: translate(-50%, -50%); }
+    50%  { top: 100%; left: 50%; transform: translate(-50%, -50%); }
+    75%  { top: 50%;  left: 0%;   transform: translate(-50%, -50%); }
+    100% { top: 0%;   left: 50%; transform: translate(-50%, -50%); }
   }
 `;
 
 export default BrandedCard;
-
+      

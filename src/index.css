@@ -3,30 +3,67 @@
 @tailwind utilities;
 
 /* 🌍 Global Reset to Fix Layout Issues */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow-x: hidden;
 }
 
+/* 🎨 CSS Custom-Properties (your design system tokens) */
+:root {
+  /* Primary & accents */
+  --color-primary:       #1e3a8a; /* Navy */
+  --color-secondary:     #2d9cfc; /* Bright blue */
+  --color-tertiary:      #a855f7; /* Purple */
+  --color-success:       #34d399; /* Green */
+
+  /* Neutrals */
+  --color-text:          #374151; /* Gray-700 */
+  --color-bg:            #ffffff; /* White */
+
+  /* Soft backgrounds (20% alpha) */
+  --color-primary-bg:    #1e3a8a33;
+  --color-secondary-bg:  #2d9cfc33;
+  --color-tertiary-bg:   #a855f733;
+  --color-success-bg:    #34d39933;
+
+  /* Feedback colors */
+  --color-info:          #3b82f6;
+  --color-warning:       #f59e0b;
+  --color-error:         #ef4444;
+}
+
 /* 🌈 Brand-Synced Word & Background Animation */
 @keyframes syncedBrandGradient {
   0%, 100% {
-    background: radial-gradient(circle at center, #2d9cfc 20%, transparent 80%);
+    background: radial-gradient(
+      circle at center,
+      var(--color-secondary) 20%,
+      transparent 80%
+    );
   }
   33% {
-    background: radial-gradient(circle at center, #a855f7 20%, transparent 80%);
+    background: radial-gradient(
+      circle at center,
+      var(--color-tertiary) 20%,
+      transparent 80%
+    );
   }
   66% {
-    background: radial-gradient(circle at center, #1e3a8a 20%, transparent 80%);
+    background: radial-gradient(
+      circle at center,
+      var(--color-primary) 20%,
+      transparent 80%
+    );
   }
 }
 
 .faint-rainbow {
   animation: syncedBrandGradient 15s ease-in-out infinite;
   opacity: 0.2;
-  position: fixed; /* Covers full screen */
+  position: fixed;
   inset: 0;
   z-index: -10;
   background-size: 200% 200%;
@@ -34,36 +71,32 @@ html, body {
   pointer-events: none;
 }
 
-/* 🌈 Brand word colors */
+/* 🌈 Brand word color helpers */
 .brand-blue {
-  color: #2d9cfc;
+  color: var(--color-secondary);
 }
 .brand-purple {
-  color: #a855f7;
+  color: var(--color-tertiary);
 }
 .brand-navy {
-  color: #1e3a8a;
+  color: var(--color-primary);
 }
 
-/* 👕 Soft branded blue for card background */
+/* 👕 Soft branded background helper */
 .bg-soft-navy {
-  background-color: #eaf3fc;
+  background-color: var(--color-secondary-bg);
 }
 
-/* Base */
+/* 📝 Body defaults */
 body {
-  @apply bg-white text-black font-sans overflow-x-hidden;
+  @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans;
 }
 
 #root {
   @apply max-w-full m-0 p-0 text-center;
 }
 
+/* 🎨 SVG circle transition helper */
 circle {
   transition: stroke-dashoffset 1s linear;
-}
-
-/* index.css or tailwind base */
-html, body {
-  overflow-x: hidden;
 }
